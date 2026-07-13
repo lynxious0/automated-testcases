@@ -60,15 +60,21 @@ class InventoryPage(BasePage):
         self.click((By.ID, "react-burger-menu-btn"))
         time.sleep(1)
 
+    def js_click(self, locator):
+        element = self.find(locator)
+        self.driver.execute_script("arguments[0].click();", element)
+
     def click_about(self):
         self.open_sidebar()
-        self.click((By.ID, "about_sidebar_link"))
+        self.js_click((By.ID, "about_sidebar_link"))
+        time.sleep(2)
 
     def logout(self):
         self.open_sidebar()
-        self.click((By.ID, "logout_sidebar_link"))
+        self.js_click((By.ID, "logout_sidebar_link"))
+        time.sleep(1.5)
 
     def reset_app_state(self):
         self.open_sidebar()
-        self.click((By.ID, "reset_sidebar_link"))
-        time.sleep(0.5)
+        self.js_click((By.ID, "reset_sidebar_link"))
+        time.sleep(1)
