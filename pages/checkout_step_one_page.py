@@ -9,7 +9,7 @@ class CheckoutStepOnePage(BasePage):
         self.LAST_NAME_FIELD = (By.ID, "last-name")
         self.POSTAL_CODE_FIELD = (By.ID, "postal-code")
         self.CONTINUE_BUTTON = (By.ID, "continue")
-        self.ERROR_CONTAINER = (By.CSS_NAME, ".error-message-container")
+        self.ERROR_CONTAINER = (By.CSS_SELECTOR, ".error-message-container")
 
     def enter_first_name(self, first_name):
         time.sleep(0.2)
