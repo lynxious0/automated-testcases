@@ -1,36 +1,33 @@
+import time
 from selenium.webdriver.common.by import By
 from pages.base_page import BasePage
 
-
 class CheckoutStepOnePage(BasePage):
-    URL = "https://www.saucedemo.com/checkout-step-one.html"
+    def __init__(self, driver):
+        super().__init__(driver)
+        self.FIRST_NAME_FIELD = (By.ID, "first-name")
+        self.LAST_NAME_FIELD = (By.ID, "last-name")
+        self.POSTAL_CODE_FIELD = (By.ID, "postal-code")
+        self.CONTINUE_BUTTON = (By.ID, "continue")
+        self.ERROR_CONTAINER = (By.CSS_NAME, ".error-message-container")
 
-    FIRST_NAME_INPUT = (By.ID, "first-name")
-    LAST_NAME_INPUT = (By.ID, "last-name")
-    POSTAL_CODE_INPUT = (By.ID, "postal-code")
-    CONTINUE_BUTTON = (By.ID, "continue")
-    CANCEL_BUTTON = (By.ID, "cancel")
-    ERROR_MESSAGE = (By.CSS_SELECTOR, "[data-test='error']")
+    def enter_first_name(self, first_name):
+        time.sleep(0.2)
+        self.type_text(self.FIRST_NAME_FIELD, first_name)
 
-    def is_loaded(self):
-        return "checkout-step-one.html" in self.current_url()
+    def enter_last_name(self, last_name):
+        self.type_text(self.LAST_NAME_FIELD, last_name)
 
-    def fill_info(self, first_name, last_name, postal_code):
-        self.type_text(self.FIRST_NAME_INPUT, first_name)
-        self.type_text(self.LAST_NAME_INPUT, last_name)
-        self.type_text(self.POSTAL_CODE_INPUT, postal_code)
-        return self
+    def enter_postal_code(self, postal_code):
+        self.type_text(self.POSTAL_CODE_FIELD, postal_code)
 
-    def continue_checkout(self):
-        self.click(self.CONTINUE_BUTTON)
-        return self
-
-    def cancel(self):
-        self.click(self.CANCEL_BUTTON)
-        return self
-
-    def get_error_text(self):
-        return self.get_text(self.ERROR_MESSAGE)
+    def click_continue(self):
+        element = self.find(self.CONTINUE_BUTTON)
+        self.driver.execute_script("arguments[0].click();", element)
+        time.sleep(1)
 
     def is_error_displayed(self):
-        return self.is_visible(self.ERROR_MESSAGE)
+        try:
+            return self.is_visible(self.ERROR_CONTAINER)
+        except Exception:
+            return False
