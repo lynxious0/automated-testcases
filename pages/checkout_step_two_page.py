@@ -1,6 +1,6 @@
+import time
 from selenium.webdriver.common.by import By
 from pages.base_page import BasePage
-
 
 class CheckoutStepTwoPage(BasePage):
     URL = "https://www.saucedemo.com/checkout-step-two.html"
@@ -31,9 +31,13 @@ class CheckoutStepTwoPage(BasePage):
         return float(text.replace("Total: $", ""))
 
     def finish(self):
-        self.click(self.FINISH_BUTTON)
+        element = self.find(self.FINISH_BUTTON)
+        self.driver.execute_script("arguments[0].click();", element)
+        time.sleep(1)
         return self
 
     def cancel(self):
-        self.click(self.CANCEL_BUTTON)
+        element = self.find(self.CANCEL_BUTTON)
+        self.driver.execute_script("arguments[0].click();", element)
+        time.sleep(0.5)
         return self
