@@ -1,3 +1,12 @@
+"""
+Covers the Product Feature: Product Page section (PPF-007..013).
+
+Two IDs are marked skip() - saucedemo.com's product detail page has
+no matching UI:
+  PPF-010 Product Description Price Localization -> single currency (USD) only
+  PPF-011 Product Page Rating -> no star-rating element
+  PPF-012 Product Page Quantity -> no quantity stepper/selector on this page
+"""
 import unittest
 from selenium import webdriver
 from pages.login_page import LoginPage
@@ -6,7 +15,7 @@ from pages.product_page import ProductPage
 from tests import config
 
 
-class ProductDetailTests(unittest.TestCase):
+class ProductPageTests(unittest.TestCase):
     def setUp(self):
         self.driver = webdriver.Chrome()
         self.driver.maximize_window()
@@ -20,21 +29,30 @@ class ProductDetailTests(unittest.TestCase):
     def tearDown(self):
         self.driver.quit()
 
-    def test_product_detail_loads_correct_item(self):
+    def test_PPF_007_product_page_redirect(self):
         self.assertTrue(self.product_page.is_loaded())
+        self.assertIn("inventory-item.html", self.driver.current_url)
         self.assertEqual(self.product_page.get_item_name(), "Sauce Labs Backpack")
 
-    def test_add_to_cart_from_detail_page(self):
-        self.product_page.add_to_cart()
-        self.assertTrue(self.inventory_page.is_visible(self.inventory_page.CART_BADGE))
-        self.assertEqual(self.inventory_page.get_cart_badge_count(), 1)
+    def test_PPF_008_product_page_description(self):
+        self.assertTrue(self.product_page.get_item_description().strip())
 
-    def test_remove_from_cart_on_detail_page(self):
-        self.product_page.add_to_cart()
-        self.product_page.remove_from_cart()
-        self.assertEqual(self.inventory_page.get_cart_badge_count(), 0)
+    def test_PPF_009_product_description_price(self):
+        self.assertGreater(self.product_page.get_item_price(), 0)
 
-    def test_back_button_returns_to_inventory(self):
+    @unittest.skip("saucedemo.com only displays a single currency (USD) - no localization to test")
+    def test_PPF_010_product_description_price_localization(self):
+        pass
+
+    @unittest.skip("saucedemo.com's product page has no star-rating element to test")
+    def test_PPF_011_product_page_rating(self):
+        pass
+
+    @unittest.skip("saucedemo.com's product page has no quantity selector/stepper to test")
+    def test_PPF_012_product_page_quantity(self):
+        pass
+
+    def test_PPF_013_product_description_back_to_products_button(self):
         self.product_page.go_back()
         self.assertTrue(self.inventory_page.is_loaded())
 

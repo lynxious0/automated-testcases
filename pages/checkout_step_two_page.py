@@ -1,12 +1,13 @@
-import time
 from selenium.webdriver.common.by import By
 from pages.base_page import BasePage
 
-class CheckoutStepTwoPage(BasePage):
-    URL = "https://www.saucedemo.com/checkout-step-two.html"
 
+class CheckoutStepTwoPage(BasePage):
+    """CCF-030..032: Checkout overview / confirmation page."""
+
+    URL = "https://www.saucedemo.com/checkout-step-two.html"
     CART_ITEMS = (By.CLASS_NAME, "cart_item")
-    ITEM_TOTAL = (By.CLASS_NAME, "summary_subtotal_label")
+    SUBTOTAL_LABEL = (By.CLASS_NAME, "summary_subtotal_label")
     TAX_LABEL = (By.CLASS_NAME, "summary_tax_label")
     TOTAL_LABEL = (By.CLASS_NAME, "summary_total_label")
     FINISH_BUTTON = (By.ID, "finish")
@@ -19,25 +20,20 @@ class CheckoutStepTwoPage(BasePage):
         return len(self.find_all(self.CART_ITEMS))
 
     def get_subtotal(self):
-        text = self.get_text(self.ITEM_TOTAL)
-        return float(text.replace("Item total: $", ""))
+        return float(self.get_text(self.SUBTOTAL_LABEL).replace("Item total: $", ""))
 
     def get_tax(self):
-        text = self.get_text(self.TAX_LABEL)
-        return float(text.replace("Tax: $", ""))
+        return float(self.get_text(self.TAX_LABEL).replace("Tax: $", ""))
 
     def get_total(self):
-        text = self.get_text(self.TOTAL_LABEL)
-        return float(text.replace("Total: $", ""))
+        return float(self.get_text(self.TOTAL_LABEL).replace("Total: $", ""))
 
     def finish(self):
-        element = self.find(self.FINISH_BUTTON)
-        self.driver.execute_script("arguments[0].click();", element)
-        time.sleep(1)
+        self.click(self.FINISH_BUTTON)
+        self.wait_for_url_contains("checkout-complete.html")
         return self
 
     def cancel(self):
-        element = self.find(self.CANCEL_BUTTON)
-        self.driver.execute_script("arguments[0].click();", element)
-        time.sleep(0.5)
+        self.click(self.CANCEL_BUTTON)
+        self.wait_for_url_contains("inventory.html")
         return self

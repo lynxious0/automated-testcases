@@ -1,6 +1,7 @@
-import time
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import Select
 from pages.base_page import BasePage
+
 
 class InventoryPage(BasePage):
     def __init__(self, driver):
@@ -8,11 +9,14 @@ class InventoryPage(BasePage):
         self.INVENTORY_CONTAINER = (By.ID, "inventory_container")
         self.ITEM_CARDS = (By.CLASS_NAME, "inventory_item")
         self.ITEM_NAMES = (By.CLASS_NAME, "inventory_item_name")
+        self.ITEM_DESCS = (By.CLASS_NAME, "inventory_item_desc")
+        self.ITEM_IMAGES = (By.CSS_SELECTOR, ".inventory_item_img img")
         self.ITEM_PRICES = (By.CLASS_NAME, "inventory_item_price")
         self.SORT_DROPDOWN = (By.CLASS_NAME, "product_sort_container")
         self.CART_BUTTON = (By.CLASS_NAME, "shopping_cart_link")
         self.CART_BADGE = (By.CLASS_NAME, "shopping_cart_badge")
 
+    # --- PPF-001..006: Product List ---
     def is_loaded(self):
         return self.is_visible(self.INVENTORY_CONTAINER)
 
@@ -20,18 +24,25 @@ class InventoryPage(BasePage):
         return len(self.find_all(self.ITEM_CARDS))
 
     def get_item_names(self):
-        elements = self.find_all(self.ITEM_NAMES)
-        return [el.text for el in elements]
+        return [el.text for el in self.find_all(self.ITEM_NAMES)]
+
+    def get_item_descriptions(self):
+        return [el.text for el in self.find_all(self.ITEM_DESCS)]
+
+    def get_item_image_srcs(self):
+        return [el.get_attribute("src") for el in self.find_all(self.ITEM_IMAGES)]
 
     def get_item_prices(self):
-        elements = self.find_all(self.ITEM_PRICES)
-        return [float(el.text.replace("$", "")) for el in elements]
+        return [float(el.text.replace("$", "")) for el in self.find_all(self.ITEM_PRICES)]
 
+    # --- PPF-014..017: Product Filter (sort dropdown) ---
     def sort_by(self, value):
-        from selenium.webdriver.support.ui import Select
-        dropdown = Select(self.find(self.SORT_DROPDOWN))
-        dropdown.select_by_value(value)
+        Select(self.find(self.SORT_DROPDOWN)).select_by_value(value)
 
+    def get_selected_sort_label(self):
+        return Select(self.find(self.SORT_DROPDOWN)).first_selected_option.text
+
+    # --- Cart interactions (CCF-003/004) ---
     def add_item_to_cart_by_name(self, name):
         button_id = f"add-to-cart-{name.lower().replace(' ', '-')}"
         self.click((By.ID, button_id))
@@ -47,18 +58,20 @@ class InventoryPage(BasePage):
             return 0
 
     def click_item_name(self, name):
-        elements = self.find_all(self.ITEM_NAMES)
-        for el in elements:
+        for el in self.find_all(self.ITEM_NAMES):
             if el.text == name:
                 el.click()
-                break
+                return
+        raise ValueError(f"Item '{name}' not found on inventory page")
 
     def go_to_cart(self):
         self.click(self.CART_BUTTON)
+        self.wait_for_url_contains("cart.html")
 
+    # --- Sidebar menu ---
     def open_sidebar(self):
         self.click((By.ID, "react-burger-menu-btn"))
-        time.sleep(1)
+        self.wait.until(lambda d: self.is_visible((By.ID, "logout_sidebar_link")))
 
     def js_click(self, locator):
         element = self.find(locator)
@@ -67,14 +80,12 @@ class InventoryPage(BasePage):
     def click_about(self):
         self.open_sidebar()
         self.js_click((By.ID, "about_sidebar_link"))
-        time.sleep(2)
 
     def logout(self):
         self.open_sidebar()
         self.js_click((By.ID, "logout_sidebar_link"))
-        time.sleep(1.5)
+        self.wait_for_url_contains("saucedemo.com")
 
     def reset_app_state(self):
         self.open_sidebar()
         self.js_click((By.ID, "reset_sidebar_link"))
-        time.sleep(1)
