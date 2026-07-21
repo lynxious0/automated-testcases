@@ -3,7 +3,6 @@ from pages.base_page import BasePage
 
 
 class CheckoutStepTwoPage(BasePage):
-    """CCF-030..032: Checkout overview / confirmation page."""
 
     URL = "https://www.saucedemo.com/checkout-step-two.html"
     CART_ITEMS = (By.CLASS_NAME, "cart_item")

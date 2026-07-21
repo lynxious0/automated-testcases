@@ -3,13 +3,6 @@ from pages.base_page import BasePage
 
 
 class CheckoutStepOnePage(BasePage):
-    """CCF-021..029: Checkout info page.
-
-    Note: saucedemo.com's checkout-step-one page only collects first name,
-    last name, and postal code. There is no payment input field on this
-    site (CCF-025 in the source doc), so no payment-related locator exists
-    here on purpose.
-    """
 
     URL = "https://www.saucedemo.com/checkout-step-one.html"
     FIRST_NAME_FIELD = (By.ID, "first-name")

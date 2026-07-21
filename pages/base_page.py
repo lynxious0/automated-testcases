@@ -24,12 +24,6 @@ class BasePage:
         self.wait.until(EC.element_to_be_clickable(locator)).click()
 
     def type_text(self, locator, text):
-        # NOTE: do not use element.clear() here. saucedemo's checkout form
-        # fields are React-controlled inputs, and Selenium's native clear()
-        # does not reliably fire the 'input' event React listens for - the
-        # field can end up visually/DOM-wise empty even though clear()
-        # "succeeded". Select-all + Delete does fire real keyboard events,
-        # so React's state stays in sync with what's on screen.
         element = self.find(locator)
         element.click()
         element.send_keys(Keys.CONTROL, "a")

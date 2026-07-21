@@ -3,7 +3,6 @@ from pages.base_page import BasePage
 
 
 class LoginPage(BasePage):
-    """ULF-001..011 and GLB-001..003: Login page."""
 
     URL = "https://www.saucedemo.com/"
     USERNAME_INPUT = (By.ID, "user-name")
